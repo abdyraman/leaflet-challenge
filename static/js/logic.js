@@ -1,7 +1,7 @@
 // Creating the map object
 let myMap = L.map('map', {
-    center: [39.0997, -124.0179],
-    zoom: 4.5
+    center: [36.778259, -119.417931],
+    zoom: 5
   });
   
   // Adding the tile layer
@@ -11,9 +11,6 @@ let myMap = L.map('map', {
   
   // Use this link to get the GeoJSON data.
   let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-  
-  let values = [];
-  let colors = [];
   
   // Using Leaflet, create a map that plots all the earthquakes from your dataset based on their longitude and latitude.
   fetch(url)
@@ -28,19 +25,17 @@ let myMap = L.map('map', {
           const markerSize = magnitude * 5;
   
           // Calculate marker color based on depth
-          values.push(depth);
           const markerColor = getColor(depth);
   
           return L.circleMarker(latlng, {
             radius: markerSize,
             fillColor: markerColor,
             color: 'black',
-            fillOpacity: 0.5
+            fillOpacity: 0.7
           });
         },
         onEachFeature: onEachFeature
       }).addTo(myMap);
-  
       // Create a legend after the GeoJSON data is loaded
       createLegend();
     });
@@ -49,28 +44,22 @@ let myMap = L.map('map', {
   function getColor(depth) {
     // Define color range based on depth values
     const colors = [
-      "green",
-      "lightgreen",
-      "yellow",
-      "orange",
-      "red",
-      "darkred"
+      "#FFFFCC",
+      "#FFEDA0",
+      "#FED976",
+      "#FEB24C",
+      "#FD8D3C",
+      "#FC4E2A",
+      "#E31A1C",
+      "#BD0026",
+      "#800026"
     ];
   
-    // Find the appropriate color based on the depth value
-    if (depth <= 10) {
-      return colors[0];
-    } else if (depth <= 30) {
-      return colors[1];
-    } else if (depth <= 50) {
-      return colors[2];
-    } else if (depth <= 70) {
-      return colors[3];
-    } else if (depth <= 90) {
-      return colors[4];
-    } else {
-      return colors[5];
-    }
+    // Determine the appropriate color index based on depth
+    const colorIndex = Math.floor(depth / 10);
+  
+    // Return the color from the colors array
+    return colors[colorIndex];
   }
   
   // Helper function to create popups for each feature
@@ -81,30 +70,29 @@ let myMap = L.map('map', {
   // Create a legend that provides context for the map data
   function createLegend() {
     let legend = L.control({ position: "bottomright" });
-    legend.onAdd = function() {
-      let div = L.DomUtil.create("div", "info legend");
+    legend.onAdd = function(map) {
+      let div = L.DomUtil.create("div", "legend");
+      let depthValues = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
+      let labels = [];
   
-      // Define the legend values and colors
-      let limits = calculateLegendLimits(values);
-      let colors = calculateLegendColors(limits.length);
+      // Add title to the legend
+      div.innerHTML = "<h3>Depth Legend</h3>";
   
-      // Your visualization should look something like the preceding map.
-      // Add the minimum and maximum.
-      let legendInfo = "<h1>Depth of the earthquake</h1>" +
-        "<div class=\"labels\">" +
-          "<div class=\"min\">" + limits[0] + "</div>" +
-          "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
-        "</div>";
+      // Loop through depth values and create labels with corresponding colors
+      for (let i = 0; i < depthValues.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' + getColor(depthValues[i]) + '"></i> ' +
+          depthValues[i] + (depthValues[i + 1] ? '&ndash;' + depthValues[i + 1] + '<br>' : '+');
+      }
   
-      div.innerHTML = legendInfo;
-      limits.forEach(function(limit, index) {
-        div.innerHTML += "<li style=\"background-color: " + colors[index] + "\"></li>";
-      });
-  
+      // Append the legend to
+      // Append the legend to the map
+      legend.addTo(map);
+
       return div;
     };
   
-    // Adding the legend to the map
+    // Add the legend to the map
     legend.addTo(myMap);
   }
   
