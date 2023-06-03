@@ -14,13 +14,13 @@ let myMap = L.map('map', {
   
   // Helper function to determine marker color based on depth
   function getColor(depth) {
-    if (depth < -10) return "olive";
-    else if (depth == -10) return "apple";
-    else if (depth < 30) return "lime";
-    else if (depth < 50) return "Peach";
-    else if (depth < 70) return "Light Coral";
-    else if (depth <= 90) return "Crimson";
-    else if (depth >= 90) return "Burgundy";
+    if (depth < -10) return "white";
+    else if (depth == 10) return "#CDFFCC";
+    else if (depth < 30) return "#69B34C";
+    else if (depth < 50) return "#FAB733";
+    else if (depth < 70) return "#FF8E15";
+    else if (depth <= 90) return "#FF4E11";
+    else if (depth >= 90) return "#FF0D0D";
 }
 
      
@@ -57,33 +57,48 @@ let myMap = L.map('map', {
   function onEachFeature(feature, layer) {
     layer.bindPopup(`<h3>${feature.properties.place}</h3><hr>${feature.geometry.coordinates[2]}</h3><hr><p>${new Date(feature.properties.time)}</p>`);
   }
+  function createLegend() {
+    // Create a legend control
+    const legend = L.control({ position: 'bottomright' });
   
-  // // Create a legend that provides context for the map data
-  // function createLegend() {
-  //   let legend = L.control({ position: "bottomright" });
-  //   legend.onAdd = function(map) {
-  //     let div = L.DomUtil.create("div", "legend");
-  //     let depthValues = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
-  //     let labels = [];
+    // Define the legend HTML content
+    legend.onAdd = function (map) {
+      const div = L.DomUtil.create('div', 'legend');
   
-  //     // Add title to the legend
-  //     div.innerHTML = "<h3>Depth Legend</h3>";
+      // Create a legend title
+      const legendTitle = '<h4>Legend</h4>';
+      div.innerHTML = legendTitle;
   
-  //     // Loop through depth values and create labels with corresponding colors
-  //     for (let i = 0; i < depthValues.length; i++) {
-  //       div.innerHTML +=
-  //         '<i style="background:' + getColor(depthValues[i]) + '"></i> ' +
-  //         depthValues[i] + (depthValues[i + 1] ? '&ndash;' + depthValues[i + 1] + '<br>' : '+');
-  //     }
+      // Create a legend content container
+      const legendContent = L.DomUtil.create('div', 'legend-content');
+      div.appendChild(legendContent);
   
-  //     // Append the legend to
-  //     // Append the legend to the map
-  //     legend.addTo(map);
+      // Define depth ranges and labels
+      const depths = [-Infinity, -10, 30, 50, 70, 90, Infinity];
+      const labels = ['< -10', '-10 - 10', '10 - 30', '30 - 50', '50 - 70', '70 - 90', '>= 90'];
+  
+      // Loop through the depths and labels to generate the legend items
+      for (let i = 0; i < depths.length - 1; i++) {
+        const legendItem = L.DomUtil.create('div', 'legend-item');
+  
+        // Create the legend color marker
+        const legendColor = L.DomUtil.create('div', 'legend-color');
+        legendColor.style.backgroundColor = getColor((depths[i] + depths[i + 1]) / 2);
+        legendItem.appendChild(legendColor);
+  
+        // Create the legend label
+        const legendLabel = L.DomUtil.create('div', 'legend-label');
+        legendLabel.innerHTML = labels[i];
+        legendItem.appendChild(legendLabel);
+  
+        legendContent.appendChild(legendItem);
+      }
+      return div;
+    };
+  
+    // Add the legend to the map
+    legend.addTo(myMap);
+  }
+  
 
-  //     return div;
-  //   };
-  
-  //   // Add the legend to the map
-  //   legend.addTo(myMap);
-  // }
   
