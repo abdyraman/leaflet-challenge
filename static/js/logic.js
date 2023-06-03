@@ -12,6 +12,18 @@ let myMap = L.map('map', {
   // Use this link to get the GeoJSON data.
   let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
   
+  // Helper function to determine marker color based on depth
+  function getColor(depth) {
+    if (depth < -10) return "olive";
+    else if (depth == -10) return "apple";
+    else if (depth < 30) return "lime";
+    else if (depth < 50) return "Peach";
+    else if (depth < 70) return "Light Coral";
+    else if (depth <= 90) return "Crimson";
+    else if (depth >= 90) return "Burgundy";
+}
+
+     
   // Using Leaflet, create a map that plots all the earthquakes from your dataset based on their longitude and latitude.
   fetch(url)
     .then(response => response.json())
@@ -22,7 +34,7 @@ let myMap = L.map('map', {
           const depth = feature.geometry.coordinates[2];
   
           // Calculate marker size based on magnitude
-          const markerSize = magnitude * 5;
+          const markerSize = magnitude * 3;
   
           // Calculate marker color based on depth
           const markerColor = getColor(depth);
@@ -31,7 +43,8 @@ let myMap = L.map('map', {
             radius: markerSize,
             fillColor: markerColor,
             color: 'black',
-            fillOpacity: 0.7
+            fillOpacity: 0.7,
+            weight: 1 
           });
         },
         onEachFeature: onEachFeature
@@ -39,60 +52,38 @@ let myMap = L.map('map', {
       // Create a legend after the GeoJSON data is loaded
       createLegend();
     });
-  
-  // Helper function to determine marker color based on depth
-  function getColor(depth) {
-    // Define color range based on depth values
-    const colors = [
-      "#FFFFCC",
-      "#FFEDA0",
-      "#FED976",
-      "#FEB24C",
-      "#FD8D3C",
-      "#FC4E2A",
-      "#E31A1C",
-      "#BD0026",
-      "#800026"
-    ];
-  
-    // Determine the appropriate color index based on depth
-    const colorIndex = Math.floor(depth / 10);
-  
-    // Return the color from the colors array
-    return colors[colorIndex];
-  }
-  
+    
   // Helper function to create popups for each feature
   function onEachFeature(feature, layer) {
     layer.bindPopup(`<h3>${feature.properties.place}</h3><hr>${feature.geometry.coordinates[2]}</h3><hr><p>${new Date(feature.properties.time)}</p>`);
   }
   
-  // Create a legend that provides context for the map data
-  function createLegend() {
-    let legend = L.control({ position: "bottomright" });
-    legend.onAdd = function(map) {
-      let div = L.DomUtil.create("div", "legend");
-      let depthValues = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
-      let labels = [];
+  // // Create a legend that provides context for the map data
+  // function createLegend() {
+  //   let legend = L.control({ position: "bottomright" });
+  //   legend.onAdd = function(map) {
+  //     let div = L.DomUtil.create("div", "legend");
+  //     let depthValues = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
+  //     let labels = [];
   
-      // Add title to the legend
-      div.innerHTML = "<h3>Depth Legend</h3>";
+  //     // Add title to the legend
+  //     div.innerHTML = "<h3>Depth Legend</h3>";
   
-      // Loop through depth values and create labels with corresponding colors
-      for (let i = 0; i < depthValues.length; i++) {
-        div.innerHTML +=
-          '<i style="background:' + getColor(depthValues[i]) + '"></i> ' +
-          depthValues[i] + (depthValues[i + 1] ? '&ndash;' + depthValues[i + 1] + '<br>' : '+');
-      }
+  //     // Loop through depth values and create labels with corresponding colors
+  //     for (let i = 0; i < depthValues.length; i++) {
+  //       div.innerHTML +=
+  //         '<i style="background:' + getColor(depthValues[i]) + '"></i> ' +
+  //         depthValues[i] + (depthValues[i + 1] ? '&ndash;' + depthValues[i + 1] + '<br>' : '+');
+  //     }
   
-      // Append the legend to
-      // Append the legend to the map
-      legend.addTo(map);
+  //     // Append the legend to
+  //     // Append the legend to the map
+  //     legend.addTo(map);
 
-      return div;
-    };
+  //     return div;
+  //   };
   
-    // Add the legend to the map
-    legend.addTo(myMap);
-  }
+  //   // Add the legend to the map
+  //   legend.addTo(myMap);
+  // }
   
