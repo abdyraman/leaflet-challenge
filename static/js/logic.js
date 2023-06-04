@@ -23,6 +23,7 @@ let myMap = L.map('map', {
     else if (depth >= 90) return "#FF0D0D";
 }
 
+const depth_values=[]
      
   // Using Leaflet, create a map that plots all the earthquakes from your dataset based on their longitude and latitude.
   fetch(url)
@@ -32,13 +33,15 @@ let myMap = L.map('map', {
         pointToLayer: function (feature, latlng) {
           const magnitude = feature.properties.mag;
           const depth = feature.geometry.coordinates[2];
-  
+          depth_values.push(depth)
+
           // Calculate marker size based on magnitude
           const markerSize = magnitude * 3;
   
           // Calculate marker color based on depth
           const markerColor = getColor(depth);
-  
+          
+
           return L.circleMarker(latlng, {
             radius: markerSize,
             fillColor: markerColor,
@@ -74,16 +77,15 @@ let myMap = L.map('map', {
       div.appendChild(legendContent);
   
       // Define depth ranges and labels
-      const depths = [-Infinity, -10, 30, 50, 70, 90, Infinity];
       const labels = ['< -10', '-10 - 10', '10 - 30', '30 - 50', '50 - 70', '70 - 90', '>= 90'];
   
       // Loop through the depths and labels to generate the legend items
-      for (let i = 0; i < depths.length - 1; i++) {
+      for (let i = 0; i < depth_values.length - 1; i++) {
         const legendItem = L.DomUtil.create('div', 'legend-item');
   
         // Create the legend color marker
         const legendColor = L.DomUtil.create('div', 'legend-color');
-        legendColor.style.backgroundColor = getColor((depths[i] + depths[i + 1]) / 2);
+        legendColor.style.backgroundColor = getColor((depth_values[i] + depth_values[i + 1]) / 2);
         legendItem.appendChild(legendColor);
   
         // Create the legend label
