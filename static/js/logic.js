@@ -14,14 +14,15 @@ let myMap = L.map('map', {
   
   // Helper function to determine marker color based on depth
   function getColor(depth) {
-    if (depth <= -10 && depth <= 10) return "white";
-    else if (depth > 10 && depth <= 30) return "#69B34C";
-    else if (depth > 30 && depth <= 50) return "#FAB733";
-    else if (depth > 50 && depth <= 70) return "#FF8E15";
-    else if (depth > 70 && depth <= 90) return "#FF4E11";
-    else if (depth > 90) return "#FF0D0D";
-  }
-  
+      if (depth < -10) return "black";
+      else if (depth >= -10 && depth < 10) return "lightgreen";
+      else if (depth >= 10 && depth < 30) return "#69B34C";
+      else if (depth >= 30 && depth < 50) return "#FAB733";
+      else if (depth >= 50 && depth < 70) return "#FF8E15";
+      else if (depth >= 70 && depth < 90) return "#FF4E11";
+      else if (depth >= 90) return "#FF0D0D";
+    }
+    
 
 const depth_values=[]
      
@@ -77,8 +78,7 @@ function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
 
     // Define depth ranges and labels
-
-    const limits = [-10, 10, 30, 50, 70, 90, 90];
+    const limits = [-10, 10, 30, 50, 70, 90];
     const colors = limits.map(depth => getColor(depth));
 
     // Create a legend title
@@ -105,12 +105,24 @@ function createLegend() {
 
       legendContent.appendChild(legendItem);
     }
+
+    // Add the last legend item for "90+"
+    const lastLegendItem = L.DomUtil.create('div', 'legend-item');
+    const lastLegendLabel = L.DomUtil.create('div', 'legend-label');
+    lastLegendLabel.innerHTML = '90+';
+    lastLegendItem.appendChild(lastLegendLabel);
+    const lastLegendColor = L.DomUtil.create('div', 'legend-color');
+    lastLegendColor.style.backgroundColor = colors[colors.length - 1];
+    lastLegendItem.appendChild(lastLegendColor);
+    legendContent.appendChild(lastLegendItem);
+
     return div;
   };
 
   // Add the legend to the map
   legend.addTo(myMap);
 }
+
 
 
 

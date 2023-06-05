@@ -17,6 +17,7 @@ var outdoorsLayer = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}
 // Creating a layer group for GeoJSON data
 var geoJSONLayer = L.layerGroup();
 
+
 // URLs of the GeoJSON files
 var urls = [
   'static/data/PB2002_boundaries.json',
@@ -36,6 +37,7 @@ urls.forEach(function(url) {
       });
     });
 });
+
 
 // Adding the tile layers and GeoJSON layer to the map
 satelliteLayer.addTo(myMap);
