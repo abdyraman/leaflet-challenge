@@ -14,16 +14,11 @@ let myMap = L.map('map', {
   
   // Helper function to determine marker color based on depth
   function getColor(depth) {
-    if (depth < -10) return "white";
-    else if (depth >= -10 && depth <= 10) return "#CDFFCC";
-    else if (depth > 10 && depth <= 20) return "#69B34C";
-    else if (depth > 20 && depth <= 30) return "#69B34C";
-    else if (depth > 30 && depth <= 40) return "#FAB733";
-    else if (depth > 40 && depth <= 50) return "#FAB733";
-    else if (depth > 50 && depth <= 60) return "#FF8E15";
-    else if (depth > 60 && depth <= 70) return "#FF8E15";
-    else if (depth > 70 && depth <= 80) return "#FF4E11";
-    else if (depth > 80 && depth <= 90) return "#FF4E11";
+    if (depth <= -10 && depth <= 10) return "white";
+    else if (depth > 10 && depth <= 30) return "#69B34C";
+    else if (depth > 30 && depth <= 50) return "#FAB733";
+    else if (depth > 50 && depth <= 70) return "#FF8E15";
+    else if (depth > 70 && depth <= 90) return "#FF4E11";
     else if (depth > 90) return "#FF0D0D";
   }
   
@@ -37,8 +32,8 @@ const depth_values=[]
       L.geoJSON(data.features, {
         pointToLayer: function (feature, latlng) {
           const magnitude = feature.properties.mag;
-          const depth = feature.geometry.coordinates[2];
-          depth_values.push(depth)
+          const depth = feature.geometry.coordinates[2];      
+          depth_values.push(depth);
 
           // Calculate marker size based on magnitude
           const markerSize = magnitude * 3;
@@ -58,13 +53,21 @@ const depth_values=[]
         onEachFeature: onEachFeature
       }).addTo(myMap);
       // Create a legend after the GeoJSON data is loaded
-      createLegend();
+          // Create a legend after the GeoJSON data is loaded
+    createLegend();
+
+      // Find the minimum and maximum depth_values
+      const minValue = Math.min(...depth_values);
+      const maxValue = Math.max(...depth_values);
+      console.log('Minimum depth:', minValue);
+      console.log('Maximum depth:', maxValue);
     });
-    
-  // Helper function to create popups for each feature
-  function onEachFeature(feature, layer) {
-    layer.bindPopup(`<h3>${feature.properties.place}</h3><hr>${feature.geometry.coordinates[2]}</h3><hr><p>${new Date(feature.properties.time)}</p>`);
-  }
+
+// Helper function to create popups for each feature
+function onEachFeature(feature, layer) {
+  layer.bindPopup(`<h3>${feature.properties.place}</h3><hr>${feature.geometry.coordinates[2]}</h3><hr><p>${new Date(feature.properties.time)}</p>`);
+}
+
 function createLegend() {
   // Create a legend control
   const legend = L.control({ position: 'bottomright' });
@@ -74,9 +77,9 @@ function createLegend() {
     const div = L.DomUtil.create('div', 'legend');
 
     // Define depth ranges and labels
-    const limits = depth_values.sort((a, b) => a - b);
+
+    const limits = [-10, 10, 30, 50, 70, 90, 90];
     const colors = limits.map(depth => getColor(depth));
-    const labels = [];
 
     // Create a legend title
     const legendTitle = '<h4>Legend</h4>';
@@ -90,15 +93,15 @@ function createLegend() {
     for (let i = 0; i < limits.length - 1; i++) {
       const legendItem = L.DomUtil.create('div', 'legend-item');
 
-      // Create the legend color marker
-      const legendColor = L.DomUtil.create('div', 'legend-color');
-      legendColor.style.backgroundColor = colors[i];
-      legendItem.appendChild(legendColor);
-
       // Create the legend label with depth range
       const legendLabel = L.DomUtil.create('div', 'legend-label');
       legendLabel.innerHTML = `${limits[i]} - ${limits[i + 1]}`;
       legendItem.appendChild(legendLabel);
+
+      // Create the legend color box
+      const legendColor = L.DomUtil.create('div', 'legend-color');
+      legendColor.style.backgroundColor = colors[i];
+      legendItem.appendChild(legendColor);
 
       legendContent.appendChild(legendItem);
     }
@@ -108,3 +111,9 @@ function createLegend() {
   // Add the legend to the map
   legend.addTo(myMap);
 }
+
+
+
+
+
+
