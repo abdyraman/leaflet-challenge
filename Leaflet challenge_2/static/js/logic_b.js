@@ -17,8 +17,6 @@ var outdoorsLayer = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}
 // Creating a layer group for GeoJSON data
 var geoJSONLayer = L.layerGroup();
 
-
-
 // URLs of the GeoJSON files
 var urls = [
   'static/data/PB2002_boundaries.json',
@@ -39,6 +37,12 @@ urls.forEach(function(url) {
     });
 });
 
+// Fetch earthquake data and create L.geoJSON layer
+function createEarthquakeLayer() {
+  return fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson')
+    .then(response => response.json())
+    .then(data => L.geoJSON(data));
+}
 
 // Adding the tile layers and GeoJSON layer to the map
 satelliteLayer.addTo(myMap);
@@ -58,5 +62,10 @@ var overlays = {
   'Tectonic Plates': geoJSONLayer
 };
 
-// Adding layer control to switch between tile layers and GeoJSON layer
-L.control.layers(baseLayers, overlays).addTo(myMap);
+// Fetch earthquake data and add it as an overlay layer
+createEarthquakeLayer().then(function(earthquakeLayer) {
+  overlays['Earthquakes'] = earthquakeLayer.addTo(myMap);
+  
+  // Adding layer control to switch between tile layers and overlays
+  L.control.layers(baseLayers, overlays).addTo(myMap);
+});
