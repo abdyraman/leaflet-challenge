@@ -1,4 +1,3 @@
-
 // Creating the map object
 let myMap = L.map('map', {
     center: [36.778259, -119.417931],
@@ -9,7 +8,7 @@ let myMap = L.map('map', {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(myMap);
-  
+ function CreateEarthquake(){
   // Use this link to get the GeoJSON data.
   let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
   
@@ -24,7 +23,6 @@ let myMap = L.map('map', {
       else if (depth >= 90) return "#FF0D0D";
     }
     
-
 const depth_values=[]
      
   // Using Leaflet, create a map that plots all the earthquakes from your dataset based on their longitude and latitude.
@@ -110,7 +108,7 @@ function createLegend() {
     // Add the last legend item for "90+"
     const lastLegendItem = L.DomUtil.create('div', 'legend-item');
     const lastLegendLabel = L.DomUtil.create('div', 'legend-label');
-    lastLegendLabel.innerHTML = '90+';
+    lastLegendLabel.innerHTML = '    90+';
     lastLegendItem.appendChild(lastLegendLabel);
     const lastLegendColor = L.DomUtil.create('div', 'legend-color');
     lastLegendColor.style.backgroundColor = colors[colors.length - 1];
@@ -123,10 +121,5 @@ function createLegend() {
   // Add the legend to the map
   legend.addTo(myMap);
 }
-
-
-
-
-
-
-
+}
+CreateEarthquake();

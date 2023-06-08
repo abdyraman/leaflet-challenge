@@ -18,6 +18,7 @@ var outdoorsLayer = L.tileLayer('https://{s}.tile.thunderforest.com/outdoors/{z}
 var geoJSONLayer = L.layerGroup();
 
 
+
 // URLs of the GeoJSON files
 var urls = [
   'static/data/PB2002_boundaries.json',
