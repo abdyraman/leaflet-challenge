@@ -50,10 +50,7 @@ var baseLayers = {
   'Outdoors': outdoorsLayer
 };
 
-// Creating an overlays object
-var overlays = {
-  'Tectonic Plates': geoJSONLayer
-};
+
 
 // Use this link to get the GeoJSON data.
 let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
@@ -68,6 +65,8 @@ function getColor(depth) {
   else if (depth >= 70 && depth < 90) return "#FF4E11";
   else if (depth >= 90) return "#FF0D0D";
 }
+// Create a layer group for the earthquakes
+var earthquakeLayer = L.layerGroup();
 
 // Using Leaflet, create a map that plots all the earthquakes from your dataset based on their longitude and latitude.
 fetch(url)
@@ -95,7 +94,8 @@ fetch(url)
         });
       },
       onEachFeature: onEachFeature
-    }).addTo(myMap);
+    }).addTo(earthquakeLayer);   
+
     // Create a legend after the GeoJSON data is loaded
     createLegend();
 
@@ -164,6 +164,12 @@ function createLegend() {
   // Add the legend to the map
   legend.addTo(myMap);
 }
+
+// Creating an overlays object
+var overlays = {
+  'Tectonic Plates': geoJSONLayer,
+  'Earthquakes': earthquakeLayer
+};
 
 // Adding layer control to switch between tile layers and overlays
 L.control.layers(baseLayers, overlays).addTo(myMap);
